@@ -1,16 +1,16 @@
-﻿using Reengineering.Entities.FrequentRentalPoints;
-using Reengineering.Entities.Prices;
-using Reengineering.Entities;
+﻿using Reengineering.Entities;
+using Reengineering.Enums;
+using System.Text.Json;
 
-var rembo = CreateMovie("Rembo", new RegularPriceCalculator());
-var lotr = CreateMovie("The Lord of the Rings", new NewReleasePriceCalculator());
-var harryPotter = CreateMovie("Harry Potter", new ChildrensPriceCalculator());
+var rembo = CreateMovie("Rembo", MovieType.Regular);
+var lotr = CreateMovie("The Lord of the Rings", MovieType.NewRelease);
+var harryPotter = CreateMovie("Harry Potter", MovieType.Childrens);
 
 var rentals = new List<Rental>
         {
-            CreateRental(rembo, 1, new NormalFrequentRentalPointsCalculator()),
-            CreateRental(lotr, 4, new NewReleaseFrequentRentalPointsCalculator()),
-            CreateRental(harryPotter, 5, new NormalFrequentRentalPointsCalculator())
+            CreateRental(rembo, 1),
+            CreateRental(lotr, 4),
+            CreateRental(harryPotter, 5)
         };
 
 var customer = new Customer
@@ -19,22 +19,22 @@ var customer = new Customer
     Rentals = rentals
 };
 
-Console.WriteLine(customer.GenerateStatement());
-static Movie CreateMovie(string title, IPriceCalculator priceCalculator)
+Console.WriteLine(JsonSerializer.Serialize(customer));
+
+static Movie CreateMovie(string title, MovieType type)
 {
     return new Movie
     {
         Title = title,
-        PriceCalculator = priceCalculator
+        Type = type
     };
 }
 
-static Rental CreateRental(Movie movie, int daysRented, IFrequentRentalPointsCalculator frequentRentalPointsCalculator)
+static Rental CreateRental(Movie movie, int daysRented)
 {
     return new Rental
     {
         Movie = movie,
-        DaysRented = daysRented,
-        FrequentRentalPointsCalculator = frequentRentalPointsCalculator
+        DaysRented = daysRented
     };
 }

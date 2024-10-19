@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reengineering", "Reengineering\Reengineering.csproj", "{6007A2FE-1BDC-4601-A7A5-23626D241FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReengineeringTests", "ReengineeringTests\ReengineeringTests.csproj", "{17F9D885-861D-481C-A47A-7BC46132DF73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReengineeringTests", "ReengineeringTests\ReengineeringTests.csproj", "{17F9D885-861D-481C-A47A-7BC46132DF73}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReengineeringAPI", "ReengineeringAPI\ReengineeringAPI.csproj", "{12437A3B-B2A9-441A-97D8-3A09BF625A8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{17F9D885-861D-481C-A47A-7BC46132DF73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17F9D885-861D-481C-A47A-7BC46132DF73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17F9D885-861D-481C-A47A-7BC46132DF73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12437A3B-B2A9-441A-97D8-3A09BF625A8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12437A3B-B2A9-441A-97D8-3A09BF625A8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12437A3B-B2A9-441A-97D8-3A09BF625A8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12437A3B-B2A9-441A-97D8-3A09BF625A8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
