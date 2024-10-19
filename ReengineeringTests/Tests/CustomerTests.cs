@@ -1,5 +1,6 @@
 ﻿using Reengineering.Entities;
-using Reengineering.Enums;
+using Reengineering.Entities.FrequentRentalPoints;
+using Reengineering.Entities.Prices;
 
 namespace ReengineeringTests.Tests
 {
@@ -8,17 +9,22 @@ namespace ReengineeringTests.Tests
         private Movie _rembo = new()
         {
             Title = "Rembo",
-            Type = MovieType.Regular
+            PriceCalculator = new RegularPriceCalculator()
         };
         private Movie _lotr = new()
         {
             Title = "The Lord of the Rings",
-            Type = MovieType.NewRelease
+            PriceCalculator = new NewReleasePriceCalculator()
         };
         private Movie _harryPotter = new()
         {
             Title = "Harry Potter",
-            Type = MovieType.Childrens
+            PriceCalculator = new ChildrensPriceCalculator()
+        };
+        private Movie _how = new()
+        {
+            Title = "House of Wax",
+            PriceCalculator = new HorrorPriceCalculator()
         };
         private List<Rental> _rentals;
         private Customer _underTest;
@@ -41,17 +47,20 @@ namespace ReengineeringTests.Tests
                     new Rental 
                     {
                         Movie = _rembo,
-                        DaysRented = 1
+                        DaysRented = 1,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     },
                     new Rental
                     {
                         Movie = _lotr,
-                        DaysRented = 4
+                        DaysRented = 4,
+                        FrequentRentalPointsCalculator = new NewReleaseFrequentRentalPointsCalculator()
                     },
                     new Rental
                     {
                         Movie = _harryPotter,
-                        DaysRented = 5
+                        DaysRented = 5,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -77,7 +86,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _rembo,
-                        DaysRented = 1
+                        DaysRented = 1,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -101,7 +111,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _rembo,
-                        DaysRented = 3
+                        DaysRented = 3,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -125,7 +136,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _lotr,
-                        DaysRented = 1
+                        DaysRented = 1,
+                        FrequentRentalPointsCalculator = new NewReleaseFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -149,7 +161,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _lotr,
-                        DaysRented = 4
+                        DaysRented = 4,
+                        FrequentRentalPointsCalculator = new NewReleaseFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -173,7 +186,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _harryPotter,
-                        DaysRented = 1
+                        DaysRented = 1,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -197,7 +211,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = _harryPotter,
-                        DaysRented = 5
+                        DaysRented = 5,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -214,6 +229,56 @@ namespace ReengineeringTests.Tests
         }
 
         [Fact]
+        public void GenerateStatement_HorrorWithoutAdditionalAmount()
+        {
+            // Given
+            _rentals.AddRange([
+                    new Rental
+                    {
+                        Movie = _how,
+                        DaysRented = 2,
+                        FrequentRentalPointsCalculator = new HorrorFrequentRentalPointsCalculator()
+                    }
+                ]);
+
+            // When
+            var result = _underTest.GenerateStatement();
+
+            // Then
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Contains("for John Doe", result);
+            Assert.Contains("House of Wax\t3", result);
+            Assert.Contains("Amount: 3", result);
+            Assert.Contains("Frequent Renter Points: 1", result);
+        }
+        
+        [Fact]
+        public void GenerateStatement_HorrorWithAdditionalAmountAndFrequentRentalPointsCalculator()
+        {
+            // Given
+            _rentals.AddRange([
+                    new Rental
+                    {
+                        Movie = _how,
+                        DaysRented = 8,
+                        FrequentRentalPointsCalculator = new HorrorFrequentRentalPointsCalculator()
+                    }
+                ]);
+
+            // When
+            var result = _underTest.GenerateStatement();
+
+            // Then
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Contains("for John Doe", result);
+            Assert.Contains("House of Wax\t5", result);
+            Assert.Contains("Amount: 5", result);
+            Assert.Contains("Frequent Renter Points: 2", result);
+        }
+
+        [Fact]
         public void GenerateStatement_WithoutFilm()
         {
             // Given
@@ -221,7 +286,8 @@ namespace ReengineeringTests.Tests
                     new Rental
                     {
                         Movie = null,
-                        DaysRented = 5
+                        DaysRented = 5,
+                        FrequentRentalPointsCalculator = new NormalFrequentRentalPointsCalculator()
                     }
                 ]);
 
@@ -235,6 +301,31 @@ namespace ReengineeringTests.Tests
             Assert.Contains("\t0", result);
             Assert.Contains("Amount: 0", result);
             Assert.Contains("Frequent Renter Points: 1", result);
+        }
+        
+        [Fact]
+        public void GenerateStatement_WithoutFrequentRentalPointsCalculator()
+        {
+            // Given
+            _rentals.AddRange([
+                    new Rental
+                    {
+                        Movie = _rembo,
+                        DaysRented = 1,
+                        FrequentRentalPointsCalculator = null
+                    }
+                ]);
+
+            // When
+            var result = _underTest.GenerateStatement();
+
+            // Then
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Contains("for John Doe", result);
+            Assert.Contains("Rembo\t2", result);
+            Assert.Contains("Amount: 2", result);
+            Assert.Contains("Frequent Renter Points: 0", result);
         }
     }
 }

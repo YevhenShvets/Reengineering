@@ -1,6 +1,4 @@
-﻿using Reengineering.Enums;
-
-namespace Reengineering.Entities
+﻿namespace Reengineering.Entities
 {
     public class Customer
     {
@@ -17,23 +15,23 @@ namespace Reengineering.Entities
             {
                 foreach (var rental in Rentals)
                 {
-                    float rentalAmount = CalculateRentalAmount(rental);
-                    frequentRentalPoints += rental.CalculateFrequentRentalPoints();
+                    // Calculate rental charge
+                    float rentalCharge = rental.Movie?.PriceCalculator?.CalculateCharge(rental.DaysRented) ?? 0.0f;
 
-                    statement += $"\t{rental.Movie?.Title}\t{rentalAmount}\n";
-                    totalAmount += rentalAmount;
+                    // Calculate frequent rental points
+                    frequentRentalPoints += rental.FrequentRentalPointsCalculator?.CalculateFrequentRentalPoints(rental.DaysRented) ?? 0;
+
+                    // Append rental information to the statement
+                    statement += $"\t{rental.Movie?.Title}\t{rentalCharge}\n";
+                    totalAmount += rentalCharge;
                 }
             }
 
+            // Append total amount and frequent rental points to the statement
             statement += $"\nTotal Amount: {totalAmount}\n";
             statement += $"Frequent Renter Points: {frequentRentalPoints}";
 
             return statement;
-        }
-
-        private float CalculateRentalAmount(Rental rental)
-        {
-            return rental.Movie?.CalculateCharge(rental.DaysRented) ?? 0.0f;
         }
     }
 }
